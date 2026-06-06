@@ -45,12 +45,21 @@ function HasilContent() {
   const durationDays = Number(searchParams.get("duration") ?? "0");
   const riskLevel = (searchParams.get("risk") ?? "AMAN") as RiskLevel;
   const recommendation = searchParams.get("rec") ?? "";
+  const fromHistory = searchParams.get("fromHistory") === "1";
 
   const hasData = symptoms.length > 0 && durationDays > 0;
 
   // Auto-save on mount (once)
   useEffect(() => {
     if (!user || !hasData || hasSaved.current) return;
+    
+    // Cegah save ganda jika data ini dari history
+    if (fromHistory) {
+      setSaveStatus("saved"); // Anggap saja sudah tersimpan
+      hasSaved.current = true;
+      return;
+    }
+
     hasSaved.current = true;
 
     saveHistory(user.uid, {
